@@ -53,3 +53,6 @@
 '*.key',
 '*.pem',
 '*.identifier'
+'*.html",
+'*.parquet'
+'*.log.*'
