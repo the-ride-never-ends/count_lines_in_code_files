@@ -52,7 +52,10 @@
 '*.lock',
 '*.key',
 '*.pem',
-'*.identifier'
-'*.html",
-'*.parquet'
-'*.log.*'
+'*.identifier',
+'*.html',
+'*.parquet',
+'*.log',
+'*.1',
+'*.2',
+'*.3',
