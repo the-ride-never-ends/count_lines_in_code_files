@@ -31,6 +31,7 @@ import argparse
 from collections import defaultdict
 import fnmatch
 from typing import Optional
+from datetime import datetime
 
 
 
@@ -199,7 +200,7 @@ def walk_directory(directory_path, verbose=False, additional_exclusions=None, ex
     return stats
 
 
-def format_stats(stats):
+def format_stats(stats, verbose):
     """
     Format the statistics for display.
     
@@ -209,19 +210,27 @@ def format_stats(stats):
     Returns:
         str: Formatted string with statistics
     """
+    if os.name == 'nt':
+        dir_name = os.path.dirname(__file__).split('\\')[-1]
+    else:
+        dir_name = os.path.dirname(__file__).split('/')[-1]
+
     result = []
     result.append("=" * 80)
-    result.append(f"CODE LINE COUNT SUMMARY")
+    result.append(f"CODE LINE COUNT SUMMARY: {dir_name}")
+    result.append(f"Run date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     result.append("=" * 80)
+    result.append(f"Total directories analyzed: {stats['total_files']}")
     result.append(f"Total files analyzed: {stats['total_files']}")
     result.append(f"Total lines of code: {stats['total_lines']}")
     
     # Add skipped directories if any
     if 'skipped_dirs' in stats and stats['skipped_dirs']:
         result.append(f"\nSkipped directories: {len(stats['skipped_dirs'])}")
-        for skipped_dir in sorted(stats['skipped_dirs']):
-            result.append(f"  - {skipped_dir}")
-    
+        if verbose:
+            for skipped_dir in sorted(stats['skipped_dirs']):
+                result.append(f"  - {skipped_dir}")
+        
     result.append("\nBreakdown by file extension:")
     result.append("-" * 40)
     
@@ -291,9 +300,6 @@ def main():
         nargs='+',
         metavar='DIR',
         default=directories,
-        # default=[
-        #     'venv', '.venv', '.git', '.github', 'node_modules', '__pycache__', '.idea', '.vs', '.vscode',
-        #     ],
         help=f'Directories to exclude (defaults: {", ".join(directories).strip()})'
     )
     
@@ -325,7 +331,7 @@ def main():
     )
     
     # Format the results
-    formatted_stats = format_stats(stats)
+    formatted_stats = format_stats(stats, args.verbose)
     
     # Output the results
     if args.output:
